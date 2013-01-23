@@ -390,7 +390,6 @@ public class ChecklistGroupSelectionActivity extends Activity implements OnItemC
           // Recuperation du checklist group selectionne
           ChecklistGroup selectedChecklistGroup = checklistGroups.get(item);
 
-          // Fichier de sortie
           File outputFile = ChecklistController.getAvailableFileNameOnExternalMedia(ChecklistConstants.CHECKLIST_FILE_PREFIX,
               ChecklistConstants.CHECKLIST_FILE_SUFFIX);
 
@@ -418,8 +417,14 @@ public class ChecklistGroupSelectionActivity extends Activity implements OnItemC
     String state = Environment.getExternalStorageState();
     if (Environment.MEDIA_MOUNTED.equals(state)) {
       // Recuperation de tous les fichiers de checklist group a la racine
-      File path = Environment.getExternalStorageDirectory();
-
+      File sdroot = Environment.getExternalStorageDirectory();
+      File path = new File(sdroot, ChecklistConstants.CHECKLISTS_DIRECTORY_NAME);
+      
+      // create dir if necessary
+      if (!path.exists()) {
+    	  path.mkdirs();
+        }
+      
       // Instanciation du parser de checklists
       ChecklistParser parser = new ChecklistParser();
       final List<ChecklistGroup> tempChecklistGroups = new ArrayList<ChecklistGroup>();
@@ -466,8 +471,16 @@ public class ChecklistGroupSelectionActivity extends Activity implements OnItemC
           ChecklistGroup selectedChecklistGroup = tempChecklistGroups.get(item);
 
           // Affectation d'un nom libre au groupe
-          selectedChecklistGroup.setName(ChecklistController.getAvailableChecklistGroupName(selectedChecklistGroup, checklistGroups));
-
+          String groupName = selectedChecklistGroup.getName();
+          // remove group of same name, if necessary
+          List<ChecklistGroup> cgs = new ArrayList<ChecklistGroup>(checklistGroups);
+          for (ChecklistGroup c : cgs) {
+        	   if (c.getName().equals(groupName)) {
+        		   delete(c);
+        		}
+             }
+          selectedChecklistGroup.setName(groupName);
+ 
           // Affectation du nouveau nom de fichier local au groupe
           selectedChecklistGroup.setFileName(ChecklistController.getAvailableFileName(ChecklistConstants.CHECKLIST_FILE_PREFIX,
               ChecklistConstants.CHECKLIST_FILE_SUFFIX, ChecklistGroupSelectionActivity.this));

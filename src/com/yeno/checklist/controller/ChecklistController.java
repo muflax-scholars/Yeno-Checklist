@@ -211,7 +211,12 @@ public abstract class ChecklistController {
   }
 
   public static File getAvailableFileNameOnExternalMedia(String prefix, String suffix) {
-    File directory = Environment.getExternalStorageDirectory();
+    File sdroot = Environment.getExternalStorageDirectory();
+    File directory = new File(sdroot, ChecklistConstants.CHECKLISTS_DIRECTORY_NAME);
+    if (!directory.exists()) {
+    	directory.mkdirs();
+    }
+    
     int i = 0;
     File file;
     while ((file = new File(directory, prefix + i + suffix)).exists()) {
