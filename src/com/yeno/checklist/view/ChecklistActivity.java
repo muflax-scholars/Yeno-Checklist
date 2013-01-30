@@ -366,8 +366,10 @@ public class ChecklistActivity extends Activity implements OnClickListener, OnIt
       if (focusedTask != null) {
         switchTaskAndGoNext(focusedTask, false);
       } else {
-        finish();
-      }
+    	  checklist.resetAllTasks();
+        updateViews(false);
+        // finish();
+      	}
     } else if (v.getId() == R.id.skip_button) {
       Task focusedTask = checklist.getFocusedTask();
       // Etat SKIPPED pour la tache
